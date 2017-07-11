@@ -4,7 +4,8 @@ import urllib.request,sys,csv,io,os,time;
 import argparse
 
 FILE_URL = 'https://s3.amazonaws.com/carto-1000x/data/yellow_tripdata_2016-01.csv'
-FIELD = 'tip_amount'
+FIELD = 15
+operations = [sum, max, min]
 #OPERATION = 'AVG' # Number of threads to retrieve concurrently the remote file from the server.
 
 def download_task(url,chunk_queue,event):
@@ -32,6 +33,8 @@ def count_task(chunk_queue, event, field):
     M=0
     amnt=0.0
     contador = 0
+    values=[0,0,9999999]
+    d=dict()
     '''VT100 control codes.'''
     CURSOR_UP_ONE = '\x1b[1A'
     ERASE_LINE = '\x1b[2K'
@@ -48,7 +51,9 @@ def count_task(chunk_queue, event, field):
                         part = False
                     if M > 1: #skip header
                         row = next(csv.reader(io.StringIO(line.decode('utf-8'))))
-                        amnt += float(row[15]) 
+                        amnt += float(row[field]) 
+                        new_val = float(row[field]) 
+                        values = [f((values[i],new_val)) for i,f in enumerate(operations)]
                     M += 1
                 else: 
                 ##if line not contains '\n' is last line of chunk. 
@@ -61,7 +66,10 @@ def count_task(chunk_queue, event, field):
             print(CURSOR_UP_ONE + ERASE_LINE + CURSOR_UP_ONE)
             print('Downloading records ...')
             if M>0:
-                print('Partial result:  Records: %d -- AVG: %f' % (M-1, amnt/(M-1))) #M-1 because M contains header
+                #print('Partial result:  Records: %d -- AVG: %f' % (M-1, amnt/(M-1))) #M-1 because M contains header
+                for i,op in enumerate(operations):
+                    d[op.__name__] = values[i]
+                print('Partial result: ', d)
             if (event.is_set()): #'THE END: no elements in queue and download finished (even is set)'
                 print(CURSOR_UP_ONE + ERASE_LINE+ CURSOR_UP_ONE)
                 print(CURSOR_UP_ONE + ERASE_LINE+ CURSOR_UP_ONE)
@@ -81,7 +89,7 @@ def main():
     event = Event()
     args = parse_args()
     url = args.url
-    field = args.field
+    field = int(args.field)
     #op = args.operation
 
     p1 = Thread(target=download_task, args=(url,chunk_queue,event,))

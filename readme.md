@@ -1,4 +1,4 @@
-Script to analyze **on the fly** (actually only display total records and avg) remote csv file. Implemented by applying [producer-consumer problem](https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem) approach. This pattern allows us to assign each task to a thread (or process) and show partial results.
+Script to analyze **on the fly** and display statistic of remote csv field file. Implemented by applying [producer-consumer problem](https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem) approach. This pattern allows us to assign each task to a thread (or process) and show partial results.
 
 Usage
 
