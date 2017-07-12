@@ -67,9 +67,8 @@ def count_task(chunk_queue, event, field):
             print('Downloading records ...')
             if M>0:
                 #print('Partial result:  Records: %d -- AVG: %f' % (M-1, amnt/(M-1))) #M-1 because M contains header
-                for i,op in enumerate(operations):
-                    d[op.__name__] = values[i]
-                print('Partial result: ', d)
+                dn = {op.__name__:val for op,val in zip(operations,values)}
+                print('Partial result: ', dn)
             if (event.is_set()): #'THE END: no elements in queue and download finished (even is set)'
                 print(CURSOR_UP_ONE + ERASE_LINE+ CURSOR_UP_ONE)
                 print(CURSOR_UP_ONE + ERASE_LINE+ CURSOR_UP_ONE)
@@ -77,6 +76,8 @@ def count_task(chunk_queue, event, field):
                 print('The consumer has waited %s times' % str(contador))
                 print('RECORDS = ', M-1)
                 print('Average = ', amnt/(M-1))
+                dn = {op.__name__:val for op,val in zip(operations,values)}
+                print('stats: ', dn)
                 break
             contador += 1
             time.sleep(1) #(give some time for loading more records) 
