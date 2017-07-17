@@ -6,6 +6,6 @@ Usage
 $ python csv-data-test.py -u <url-csv-file> -f <index-of-field>
 ```
 
-For synchronization purposes this implementation uses a Queue and a Event object from queue and multiprocessing python library, respectively.
+For synchronization purposes this implementation uses a Queue and a Event object from queue and theading python library, respectively.
 
 Download stream is saved in queue and is consumed on the fly. No HDD extra space is needed and memory efficient. **Tested in Python 3.5.2 (vanilla) on Fedora Core 25 x86_64.**
